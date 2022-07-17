@@ -8,7 +8,8 @@
 
 ### 목차
 - [CSS](https://github.com/rudans987/TIL/tree/main/CSS)
-- [Javascript](https://github.com/rudans987/TIL/tree/main/7%EC%9B%94)
+- [Javascript](https://github.com/rudans987/TIL/tree/main/javascript)
+- [React]()
 
 -----
 

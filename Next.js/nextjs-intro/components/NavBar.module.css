@@ -1,0 +1,7 @@
+/* 페이지가 빌드될때 nextjs가 클래스이름을 무작위로 바꿔서 클래스 이름 충돌을 걱정하지 않아도 된다. */
+.link {
+  text-decoration: none;
+}
+.active {
+  color: green;
+}

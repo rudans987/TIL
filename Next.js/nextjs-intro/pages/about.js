@@ -5,6 +5,12 @@
 // localhost:3000/about을 url주소창에 입력하면 about us가 보이게 된다.
 // index.js는 localhost:3000로 연결된다.
 
+import NavBar from "../components/Navbar";
+
 export default function Potato() {
-  return "about us";
+  return (
+    <div>
+      <h1>About </h1>
+    </div>
+  );
 }

@@ -5,21 +5,21 @@
 // globals.css는 _app.js에서만 임포트 할수있다.
 // 다른 컴포넌트에서 css를 임포트할때는 module이 붙어야 한다.
 
-import NavBar from "../components/Navbar";
+import Layout from "../components/Layout";
 import "../styles/globals.css";
 
 export default function App({ Component, pageProps }) {
   return (
     <>
-      <NavBar />
-      <Component {...pageProps} />
-      <span>hello</span>
+      <Layout>
+        <Component {...pageProps} />
+      </Layout>
       {/* 글로벌 스타일 적용하는 법 */}
-      <style jsx global>{`
+      {/* <style jsx global>{`
         a {
           color: white;
         }
-      `}</style>
+      `}</style> */}
     </>
   );
 }

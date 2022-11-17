@@ -15,21 +15,21 @@
 import { useEffect, useState } from "react";
 import Seo from "../components/Seo";
 
-export default function Home() {
-  const [movies, setMovies] = useState();
-  useEffect(() => {
-    (async () => {
-      const { results } = await (await fetch(`/api/movies`)).json();
-      setMovies(results);
-    })();
-  }, []);
+export default function Home({ results }) {
+  // const [movies, setMovies] = useState();
+  // useEffect(() => {
+  //   (async () => {
+  //     const { results } = await (await fetch(`/api/movies`)).json();
+  //     setMovies(results);
+  //   })();
+  // }, []);
   return (
     <div className="container">
       <Seo title="Home" />
-      {!movies && <h4>Loading...</h4>}
-      {movies?.map((movie) => (
+      {/* {!movies && <h4>Loading...</h4>} */}
+      {results?.map((movie) => (
         <div className="movie" key={movie.id}>
-          <img src={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`} />
+          <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} />
           <h4>{movie.original_title}</h4>
         </div>
       ))}
@@ -39,6 +39,9 @@ export default function Home() {
           grid-template-columns: 1fr 1fr;
           padding: 20px;
           gap: 20px;
+        }
+        .movie {
+          cursor: pointer;
         }
         .movie img {
           max-width: 100%;
@@ -56,4 +59,21 @@ export default function Home() {
       `}</style>
     </div>
   );
+}
+
+// 이 함수의 이름은 바꿀 수 없다.
+// 아래 코드는 server에서 돌아가게 된다.
+//그걸 이용해서 apikey를 숨길 수 있다.
+// 로당 중이라는 상태를 보여주고 싶지 않다면 아래 함수를 쓴다.
+//  백엔드에서 api처리가 끝날때까지 아무것도 보이지 않는다.
+// 밑에 results는 18번째줄 results로 들어가고 30번째 줄에서 실행된다.
+export async function getServerSideProps() {
+  const { results } = await (
+    await fetch(`http://localhost:3000//api/movies`)
+  ).json();
+  return {
+    props: {
+      results,
+    },
+  };
 }

@@ -12,8 +12,10 @@
 //   );
 // }
 
-import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/router";
 import Seo from "../components/Seo";
+// import { useEffect, useState } from "react";
 
 export default function Home({ results }) {
   // const [movies, setMovies] = useState();
@@ -23,14 +25,47 @@ export default function Home({ results }) {
   //     setMovies(results);
   //   })();
   // }, []);
+
+  const router = useRouter();
+  const onClick = (id, title) => {
+    // 보여주고 싶은 url로 설정하는 방법
+    // 첫번째 인자: query로 다른 정보도 url을 통해 넘길수 있다.
+    // 두번째 인자(url마스킹): 유저에게 보여질 url(넘기는 정보를 노출시키지 않도록)
+    router.push(
+      {
+        pathname: `/movies/${id}`,
+        query: {
+          title,
+        },
+      },
+      `/movies/${id}`
+    );
+  };
   return (
     <div className="container">
       <Seo title="Home" />
       {/* {!movies && <h4>Loading...</h4>} */}
       {results?.map((movie) => (
-        <div className="movie" key={movie.id}>
+        <div
+          onClick={() => onClick(movie.id, movie.original_title)}
+          className="movie"
+          key={movie.id}
+        >
           <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} />
-          <h4>{movie.original_title}</h4>
+          <h4>
+            <Link
+              href={{
+                pathname: `/movies/${movie.id}`,
+                query: {
+                  title: movie.original_title,
+                },
+              }}
+              as={`/movies/${movie.id}`}
+              legacyBehavior
+            >
+              <a>{movie.original_title}</a>
+            </Link>
+          </h4>
         </div>
       ))}
       <style jsx>{`

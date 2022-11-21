@@ -31,15 +31,7 @@ export default function Home({ results }) {
     // 보여주고 싶은 url로 설정하는 방법
     // 첫번째 인자: query로 다른 정보도 url을 통해 넘길수 있다.
     // 두번째 인자(url마스킹): 유저에게 보여질 url(넘기는 정보를 노출시키지 않도록)
-    router.push(
-      {
-        pathname: `/movies/${id}`,
-        query: {
-          title,
-        },
-      },
-      `/movies/${id}`
-    );
+    router.push(`/movies/${title}/${id}`);
   };
   return (
     <div className="container">
@@ -54,13 +46,7 @@ export default function Home({ results }) {
           <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} />
           <h4>
             <Link
-              href={{
-                pathname: `/movies/${movie.id}`,
-                query: {
-                  title: movie.original_title,
-                },
-              }}
-              as={`/movies/${movie.id}`}
+              href={`/movies/${movie.original_title}/${movie.id}`}
               legacyBehavior
             >
               <a>{movie.original_title}</a>

@@ -9,12 +9,21 @@
 // 파일이름을 대괄호([])로 감싼 변수명으로 이름 짓는다.
 
 import { useRouter } from "next/router";
+import Seo from "../../components/Seo";
 
-export default function Detail() {
+export default function Detail({ params }) {
   const router = useRouter();
+  const [title, id] = params || [];
   return (
     <div>
-      <h4>{router.query.title || "Loading..."}</h4>
+      <Seo title={title} />
+      <h4>{title}</h4>
     </div>
   );
+}
+
+export function getServerSideProps({ params: { params } }) {
+  return {
+    props: { params },
+  };
 }

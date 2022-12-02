@@ -13,6 +13,9 @@
 // pagingEnabled : 스크롤을 페이지로 나눠 어느정도 넘겨야 다음페이지가 나오게하는 props
 // showsHorizontalScrollIndicator : 수평스크롤 숨길수 있는 props
 //ScrollView에 스타일 주는 법 : style이 아닌 contentContainerStyle라는 이름을 써야한다.
+
+//reverseGeocodeAsync :  위도와 경도를 주면 주소를 반환한다.
+import { Fontisto } from "@expo/vector-icons";
 import * as Location from "expo-location";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
@@ -28,6 +31,15 @@ import {
 const { width: SCREEN_wIDTH } = Dimensions.get("window");
 const API_KEY = "784ab24ff2ed5d94d4288abed9e25d13";
 
+const icons = {
+  Clouds: "cloudy",
+  Clear: "day-sunny",
+  Atmosphere: "cloudy-gusts",
+  Snow: "snow",
+  Rain: "rains",
+  Drizzle: "rain",
+  Thunerstorm: "lightning",
+};
 export default function App() {
   const [city, setCity] = useState("Loading...");
   const [days, setDays] = useState([]);
@@ -67,7 +79,7 @@ export default function App() {
         contentContainerStyle={styles.weather}
       >
         {days.length === 0 ? (
-          <View style={styles.day}>
+          <View style={{ ...styles.day, alignItems: "center" }}>
             <ActivityIndicator
               color="white"
               size="large"
@@ -77,9 +89,23 @@ export default function App() {
         ) : (
           days.map((day, index) => (
             <View key={index} style={styles.day}>
-              <Text style={styles.temp}>
-                {parseFloat(day.temp.day).toFixed(1)}
-              </Text>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  width: "80%",
+                }}
+              >
+                <Text style={styles.temp}>
+                  {parseFloat(day.temp.day).toFixed(1)}
+                </Text>
+                <Fontisto
+                  name={icons[day.weather[0].main]}
+                  size={68}
+                  color="white"
+                />
+              </View>
               <Text style={styles.desc}>{day.weather[0].main}</Text>
               <Text style={styles.tinyText}>{day.weather[0].description}</Text>
             </View>
@@ -102,7 +128,7 @@ const styles = StyleSheet.create({
     marginTop: 50,
   },
   cityName: {
-    fontSize: 68,
+    fontSize: 58,
     fontWeight: "500",
   },
   weather: {},
@@ -112,13 +138,13 @@ const styles = StyleSheet.create({
   },
   temp: {
     marginTop: 50,
-    fontSize: 178,
+    fontSize: 108,
   },
   desc: {
     marginTop: -30,
     fontSize: 60,
   },
   tinyText: {
-    fontSize: 20,
+    fontSize: 30,
   },
 });

@@ -13,18 +13,39 @@
 // pagingEnabled : 스크롤을 페이지로 나눠 어느정도 넘겨야 다음페이지가 나오게하는 props
 // showsHorizontalScrollIndicator : 수평스크롤 숨길수 있는 props
 //ScrollView에 스타일 주는 법 : style이 아닌 contentContainerStyle라는 이름을 써야한다.
-
+import * as Location from "expo-location";
 import { StatusBar } from "expo-status-bar";
+import { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, View, Dimensions } from "react-native";
 
 const { width: SCREEN_wIDTH } = Dimensions.get("window");
 
 export default function App() {
+  const [city, setCity] = useState("Loading...");
+  const [days, setDays] = useState([]);
+  const [ok, setOk] = useState(true);
+  const ask = async () => {
+    const { granted } = await Location.requestForegroundPermissionsAsync();
+    if (!granted) {
+      setOk(false);
+    }
+    const {
+      coords: { latitude, longitude },
+    } = await Location.getCurrentPositionAsync({ accuracy: 5 });
+    const location = await Location.reverseGeocodeAsync(
+      { latitude, longitude },
+      { useGoogleMaps: false }
+    );
+    setCity(location[0].city);
+  };
+  useEffect(() => {
+    ask();
+  }, []);
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
       <View style={styles.city}>
-        <Text style={styles.cityName}>Seoul</Text>
+        <Text style={styles.cityName}>{city}</Text>
       </View>
       <ScrollView
         horizontal

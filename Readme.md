@@ -10,10 +10,6 @@
 - [CSS](https://github.com/rudans987/TIL/tree/main/CSS)
 - [Javascript](https://github.com/rudans987/TIL/tree/main/javascript)
 - [React](https://github.com/rudans987/TIL/tree/main/React)
+- [ReactNative](https://github.com/rudans987/TIL/tree/main/ReactNative)
+- [Next.js](https://github.com/rudans987/TIL/tree/main/Next.js)
 
------
-
-### 회고
-- [2022.07](https://github.com/rudans987/TIL/tree/main/%ED%9A%8C%EA%B3%A0/2022.07)
-- [2022.08](https://github.com/rudans987/TIL/tree/main/%ED%9A%8C%EA%B3%A0/2022.08)
-- [2022.09](https://github.com/rudans987/TIL/tree/main/%ED%9A%8C%EA%B3%A0/2022.09)

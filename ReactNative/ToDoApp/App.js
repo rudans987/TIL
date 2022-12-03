@@ -5,9 +5,9 @@
 // Pressable: 새롭고 더 많은 설정이 가능한 Touchable
 
 //TextTnput
-// returnKeyType : 엔터키 변경할 수 있는 props
-// onSubmitEditing : submit할때 일어날 이벤트 함수
-// onChangeText : 텍스트 변화를 감지하는 함수
+// returnKeyType : 엔터키의 타입을 변경할 수 있는 props
+// onSubmitEditing : 엔터를 눌렀을 때 일어나는 함수
+// onChangeText : 텍스트가 바뀔 때 실행되는 함수
 //
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { StatusBar } from "expo-status-bar";
@@ -23,17 +23,27 @@ import {
 } from "react-native";
 import { theme } from "./colors";
 import { Fontisto } from "@expo/vector-icons";
+import { FontAwesome5 } from "@expo/vector-icons";
 const STORAGE_KEY = "@toDos";
+const STORAGE_HederKEY = "@working";
 
 export default function App() {
   const [working, setWorking] = useState(true);
   const [text, setText] = useState("");
+  const [editText, setEditText] = useState("");
   const [toDos, setToDos] = useState({});
   useEffect(() => {
+    loadWorking();
     loadToDos();
   }, []);
-  const travel = () => setWorking(false);
-  const work = () => setWorking(true);
+  const travel = async () => {
+    setWorking(false);
+    await AsyncStorage.setItem("@working", JSON.stringify(false));
+  };
+  const work = async () => {
+    setWorking(true);
+    await AsyncStorage.setItem("@working", JSON.stringify(true));
+  };
   const onChangeText = (payload) => {
     setText(payload);
   };
@@ -44,6 +54,10 @@ export default function App() {
     } catch (e) {
       console.log(e);
     }
+  };
+  const loadWorking = async () => {
+    const h = await AsyncStorage.getItem("@working");
+    setWorking(JSON.parse(h));
   };
   const loadToDos = async () => {
     const s = await AsyncStorage.getItem(STORAGE_KEY);
@@ -59,7 +73,10 @@ export default function App() {
     // const newToDos = Object.assign({}, toDos, {
     //   [Date.now()]: { text, work: working },
     // });
-    const newToDos = { ...toDos, [Date.now()]: { text, working } };
+    const newToDos = {
+      ...toDos,
+      [Date.now()]: { text, working, completed: false },
+    };
     setToDos(newToDos);
     await saveToDos(newToDos);
     setText("");
@@ -78,18 +95,43 @@ export default function App() {
       },
     ]);
   };
+  const completeToDo = (key) => {
+    const newToDos = { ...toDos };
+    console.log(newToDos[key]);
+    newToDos[key].completed = !newToDos[key].completed;
+    setToDos(newToDos);
+    saveToDos(newToDos);
+  };
+  const editToDo = (key) => {
+    const newToDos = { ...toDos };
+    newToDos[key].isEdit = true;
+    setEditText(newToDos[key].text);
+    setToDos(newToDos);
+    saveToDos(newToDos);
+  };
+  const editSaveToDo = (key) => {
+    const newToDos = { ...toDos };
+    console.log(newToDos[key]);
+    newToDos[key].text = editText;
+    newToDos[key].isEdit = false;
+    setToDos(newToDos);
+    saveToDos(newToDos);
+  };
+  const onChangeEditText = (payload) => {
+    setEditText(payload);
+  };
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
       <View style={styles.header}>
-        <TouchableOpacity onPress={work}>
+        <TouchableOpacity onPress={() => work()}>
           <Text
             style={{ ...styles.btnText, color: working ? "white" : theme.grey }}
           >
             Work
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={travel}>
+        <TouchableOpacity onPress={() => travel()}>
           <Text
             style={{
               ...styles.btnText,
@@ -109,13 +151,64 @@ export default function App() {
         style={styles.input}
       />
       <ScrollView>
+        {/* Object.keys(some object)는 key값들만 담긴 배열을 반환함 */}
         {Object.keys(toDos).map((key) =>
           toDos[key].working === working ? (
             <View style={styles.toDo} key={key}>
-              <Text style={styles.toDoText}>{toDos[key].text}</Text>
-              <TouchableOpacity onPress={() => deletToDo(key)}>
-                <Fontisto name="trash" size={18} color={theme.grey} />
-              </TouchableOpacity>
+              {!toDos[key].isEdit ? (
+                <Text
+                  style={{
+                    ...styles.toDoText,
+                    textDecorationLine: toDos[key].completed
+                      ? "line-through"
+                      : "none",
+                  }}
+                >
+                  {toDos[key].text}
+                </Text>
+              ) : (
+                <TextInput
+                  onSubmitEditing={() => editSaveToDo(key)}
+                  onChangeText={onChangeEditText}
+                  value={editText}
+                  returnKeyType="done"
+                  placeholder={
+                    working ? "Add a To Do" : "Where do you want to go?"
+                  }
+                  style={styles.input}
+                />
+              )}
+              <View style={styles.icons}>
+                {!toDos[key].isEdit ? (
+                  <TouchableOpacity onPress={() => editToDo(key)}>
+                    <FontAwesome5 name="edit" size={40} color={theme.grey} />
+                  </TouchableOpacity>
+                ) : null}
+                <TouchableOpacity
+                  style={styles.checkboxIcon}
+                  onPress={() => completeToDo(key)}
+                >
+                  {!toDos[key].completed ? (
+                    <Fontisto
+                      name="checkbox-passive"
+                      size={40}
+                      color={theme.grey}
+                    />
+                  ) : (
+                    <Fontisto
+                      name="checkbox-active"
+                      size={40}
+                      color={theme.grey}
+                    />
+                  )}
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.trashIcon}
+                  onPress={() => deletToDo(key)}
+                >
+                  <Fontisto name="trash" size={40} color={theme.grey} />
+                </TouchableOpacity>
+              </View>
             </View>
           ) : null
         )}
@@ -162,5 +255,14 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 16,
     fontWeight: "500",
+  },
+  icons: {
+    flexDirection: "row",
+  },
+  trashIcon: {
+    marginLeft: 30,
+  },
+  checkboxIcon: {
+    marginLeft: 30,
   },
 });

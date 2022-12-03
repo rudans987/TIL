@@ -75,7 +75,7 @@ export default function App() {
     // });
     const newToDos = {
       ...toDos,
-      [Date.now()]: { text, working, completed: false },
+      [Date.now()]: { text, working, completed: false, isEdit: false },
     };
     setToDos(newToDos);
     await saveToDos(newToDos);
@@ -172,20 +172,17 @@ export default function App() {
                   onChangeText={onChangeEditText}
                   value={editText}
                   returnKeyType="done"
-                  placeholder={
-                    working ? "Add a To Do" : "Where do you want to go?"
-                  }
-                  style={styles.input}
+                  style={styles.editInput}
                 />
               )}
               <View style={styles.icons}>
-                {!toDos[key].isEdit ? (
+                {!toDos[key].isEdit && (
                   <TouchableOpacity onPress={() => editToDo(key)}>
                     <FontAwesome5 name="edit" size={40} color={theme.grey} />
                   </TouchableOpacity>
-                ) : null}
+                )}
                 <TouchableOpacity
-                  style={styles.checkboxIcon}
+                  style={{ marginLeft: 25 }}
                   onPress={() => completeToDo(key)}
                 >
                   {!toDos[key].completed ? (
@@ -203,7 +200,7 @@ export default function App() {
                   )}
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={styles.trashIcon}
+                  style={{ marginLeft: 25 }}
                   onPress={() => deletToDo(key)}
                 >
                   <Fontisto name="trash" size={40} color={theme.grey} />
@@ -241,6 +238,14 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     fontSize: 18,
   },
+  editInput: {
+    backgroundColor: "white",
+    paddingHorizontal: 15,
+    borderRadius: 30,
+    width: 180,
+    height: 45,
+    fontSize: 16,
+  },
   toDo: {
     backgroundColor: theme.toDoBg,
     marginBottom: 10,
@@ -258,11 +263,5 @@ const styles = StyleSheet.create({
   },
   icons: {
     flexDirection: "row",
-  },
-  trashIcon: {
-    marginLeft: 30,
-  },
-  checkboxIcon: {
-    marginLeft: 30,
   },
 });

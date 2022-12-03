@@ -10,8 +10,8 @@
 - [CSS](https://github.com/rudans987/TIL/tree/main/CSS)
 - [Javascript](https://github.com/rudans987/TIL/tree/main/javascript)
 - [React](https://github.com/rudans987/TIL/tree/main/React)
-- [React Native](https://github.com/rudans987/TIL/tree/main/React)
-- [NextJS](https://github.com/rudans987/TIL/tree/main/React)
+- [ReactNative](https://github.com/rudans987/TIL/tree/main/ReactNative)
+- [Next.js](https://github.com/rudans987/TIL/tree/main/Next.js)
 
 -----
 

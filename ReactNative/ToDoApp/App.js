@@ -8,10 +8,11 @@
 // returnKeyType : 엔터키의 타입을 변경할 수 있는 props
 // onSubmitEditing : 엔터를 눌렀을 때 일어나는 함수
 // onChangeText : 텍스트가 바뀔 때 실행되는 함수
-//
+
+//Platform : 지금 실행되고 있는 플랫폼이 무엇인지 알 수 있다.
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { StatusBar } from "expo-status-bar";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -20,6 +21,7 @@ import {
   TextInput,
   ScrollView,
   Alert,
+  Platform,
 } from "react-native";
 import { theme } from "./colors";
 import { Fontisto } from "@expo/vector-icons";
@@ -28,6 +30,7 @@ const STORAGE_KEY = "@toDos";
 const STORAGE_HederKEY = "@working";
 
 export default function App() {
+  const inputRef = useRef();
   const [working, setWorking] = useState(true);
   const [text, setText] = useState("");
   const [editText, setEditText] = useState("");
@@ -62,7 +65,9 @@ export default function App() {
   const loadToDos = async () => {
     const s = await AsyncStorage.getItem(STORAGE_KEY);
     //JSON.parse는 string을 js object로 만든다.
-    setToDos(JSON.parse(s));
+    if (s) {
+      setToDos(JSON.parse(s));
+    }
   };
 
   const addToDo = async () => {
@@ -82,22 +87,31 @@ export default function App() {
     setText("");
   };
   const deletToDo = (key) => {
-    Alert.alert("TO DO 삭제", "정말 삭제하시겠습니까?", [
-      { text: "취소" },
-      {
-        text: "예",
-        onPress: () => {
-          const newToDos = { ...toDos };
-          delete newToDos[key];
-          setToDos(newToDos);
-          saveToDos(newToDos);
+    if (Platform.OS === "web") {
+      const ok = confirm("정말 삭제하시겠습니까?");
+      if (ok) {
+        const newToDos = { ...toDos };
+        delete newToDos[key];
+        setToDos(newToDos);
+        saveToDos(newToDos);
+      }
+    } else {
+      Alert.alert("TO DO 삭제", "정말 삭제하시겠습니까?", [
+        { text: "취소" },
+        {
+          text: "예",
+          onPress: () => {
+            const newToDos = { ...toDos };
+            delete newToDos[key];
+            setToDos(newToDos);
+            saveToDos(newToDos);
+          },
         },
-      },
-    ]);
+      ]);
+    }
   };
   const completeToDo = (key) => {
     const newToDos = { ...toDos };
-    console.log(newToDos[key]);
     newToDos[key].completed = !newToDos[key].completed;
     setToDos(newToDos);
     saveToDos(newToDos);
@@ -108,10 +122,12 @@ export default function App() {
     setEditText(newToDos[key].text);
     setToDos(newToDos);
     saveToDos(newToDos);
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 10);
   };
   const editSaveToDo = (key) => {
     const newToDos = { ...toDos };
-    console.log(newToDos[key]);
     newToDos[key].text = editText;
     newToDos[key].isEdit = false;
     setToDos(newToDos);
@@ -173,6 +189,7 @@ export default function App() {
                   value={editText}
                   returnKeyType="done"
                   style={styles.editInput}
+                  ref={inputRef}
                 />
               )}
               <View style={styles.icons}>

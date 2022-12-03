@@ -3,6 +3,12 @@
 // TouchableWithoutFeedback : 어떤 애니메이션도 없는 Touchable
 // onPress : 유저가 Touchable을 눌렀을때 실행되는 이벤트
 // Pressable: 새롭고 더 많은 설정이 가능한 Touchable
+
+//TextTnput
+// returnKeyType : 엔터키 변경할 수 있는 props
+// onSubmitEditing : submit할때 일어날 이벤트 함수
+// onChangeText : 텍스트 변화를 감지하는 함수
+//
 import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
 import {
@@ -17,10 +23,21 @@ import { theme } from "./colors";
 export default function App() {
   const [working, setWorking] = useState(true);
   const [text, setText] = useState("");
+  const [toDos, setToDos] = useState({});
   const travel = () => setWorking(false);
   const work = () => setWorking(true);
   const onChangeText = (payload) => {
     setText(payload);
+  };
+  const addToDo = () => {
+    if (text === "") {
+      return;
+    }
+    const newToDos = Object.assign({}, toDos, {
+      [Date.now()]: { text, work: working },
+    });
+    setToDos(newToDos);
+    setText("");
   };
   return (
     <View style={styles.container}>
@@ -45,9 +62,10 @@ export default function App() {
         </TouchableOpacity>
       </View>
       <TextInput
+        onSubmitEditing={addToDo}
         onChangeText={onChangeText}
         value={text}
-        returnKeyType="send"
+        returnKeyType="done"
         placeholder={working ? "Add a To Do" : "Where do you want to go?"}
         style={styles.input}
       />
